@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#050505">
+  <meta name="description" content="Obd Hud Car Doctor ile aracınızın kritik verilerini HUD ekranında gerçek zamanlı takip edin.">
+  <title>Obd Hud Car Doctor | Aracınızın kokpiti cebinizde</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { display: ['Space Grotesk', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
+          colors: { ink: '#050505', panel: '#0d1115', cyan: '#00f0ff', signal: '#39ff14' }
+        }
+      }
+    };
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --cyan: #00f0ff; --green: #39ff14; --ink: #050505; --panel: #0d1115; --muted: #8c9ba3; }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: var(--ink); color: #f5f7f8; font-family: 'Space Grotesk', sans-serif; overflow-x: hidden; }
+    body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opacity: .18; background-image: linear-gradient(rgba(0,240,255,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(0,240,255,.08) 1px, transparent 1px); background-size: 72px 72px; mask-image: linear-gradient(to bottom, black, transparent 72%); }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    .glow { text-shadow: 0 0 18px rgba(0,240,255,.7); }
+    .green-glow { text-shadow: 0 0 16px rgba(57,255,20,.65); }
+    .line-glow { box-shadow: 0 0 25px rgba(0,240,255,.14); }
+    .reveal { opacity: 0; transform: translateY(18px); transition: opacity .7s ease, transform .7s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .phone-shell { background: #11181c; border: 1px solid #28383d; box-shadow: 0 0 0 6px #090c0d, 0 0 75px rgba(0,240,255,.14); }
+    .phone-screen { background: #050609; }
+    .scanline { background: linear-gradient(90deg, transparent, rgba(0,240,255,.85), transparent); animation: scan 3.6s ease-in-out infinite; }
+    @keyframes scan { 0%, 100% { transform: translateY(-65px); opacity: 0; } 30%, 70% { opacity: .7; } 50% { transform: translateY(390px); } }
+    .marquee { animation: drift 18s linear infinite; }
+    @keyframes drift { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+  </style>
+</head>
+<body>
+  <header class="relative z-20 border-b border-white/10 bg-black/60 backdrop-blur-xl">
+    <nav class="mx-auto flex max-w-7xl items-center justify-between px-5 py-5 lg:px-8" aria-label="Ana navigasyon">
+      <a href="#top" class="flex items-center gap-3" aria-label="Obd Hud Car Doctor ana sayfa">
+        <img src="img/logo.png" alt="Obd Hud Car Doctor logosu" class="h-9 w-9 rounded-lg border border-cyan/70 object-cover shadow-[0_0_16px_rgba(0,240,255,.25)]">
+        <span class="text-sm font-semibold tracking-[.18em]">OBD HUD <span class="text-cyan">CAR DOCTOR</span></span>
+      </a>
+      <div class="hidden items-center gap-8 text-sm text-slate-400 md:flex">
+        <a href="#ozellikler" class="transition hover:text-cyan">Özellikler</a>
+        <a href="#ekranlar" class="transition hover:text-cyan">Ekranlar</a>
+        <a href="#download" class="rounded-full border border-cyan/70 px-4 py-2 text-cyan transition hover:bg-cyan hover:text-black">İndir <span aria-hidden="true">↗</span></a>
+      </div>
+      <button id="menuButton" class="rounded-lg border border-white/15 p-2 text-slate-300 md:hidden" aria-label="Menüyü aç" aria-expanded="false"><i data-lucide="menu" class="h-5 w-5"></i></button>
+    </nav>
+    <div id="mobileMenu" class="hidden border-t border-white/10 px-5 pb-5 md:hidden">
+      <a href="#ozellikler" class="block border-b border-white/10 py-4 text-slate-300">Özellikler</a>
+      <a href="#ekranlar" class="block border-b border-white/10 py-4 text-slate-300">Ekranlar</a>
+      <a href="#download" class="block py-4 text-cyan">Google Play'den İndir ↗</a>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="relative overflow-hidden">
+      <div class="mx-auto grid max-w-7xl items-center gap-14 px-5 pb-24 pt-20 lg:grid-cols-[1.05fr_.95fr] lg:px-8 lg:pb-32 lg:pt-28">
+        <div class="relative z-10 reveal">
+          <div class="mono mb-7 flex items-center gap-3 text-xs uppercase tracking-[.25em] text-cyan"><span class="h-px w-10 bg-cyan"></span> sürüş verisi / gerçek zamanlı</div>
+          <h1 class="max-w-3xl text-5xl font-semibold leading-[.98] tracking-[-.05em] sm:text-7xl lg:text-[5.8rem]">Aracınızın<br><span class="text-cyan glow">kokpiti</span> artık<br>cebinizde.</h1>
+          <p class="mt-8 max-w-xl text-lg leading-8 text-slate-400">Telefonunuzu gece sürüşüne hazır bir HUD ekranına dönüştürün. ELM327 üzerinden hız, devir, sıcaklık ve motor verilerini tek bakışta izleyin.</p>
+          <div class="mt-10 flex flex-col gap-4 sm:flex-row sm:items-center">
+            <a href="#download" class="group inline-flex items-center justify-center gap-3 rounded-lg bg-cyan px-6 py-4 font-semibold text-black transition hover:-translate-y-1 hover:shadow-[0_0_30px_rgba(0,240,255,.4)]"><i data-lucide="download" class="h-5 w-5"></i> Google Play'den İndir <span class="transition group-hover:translate-x-1">↗</span></a>
+            <a href="#ekranlar" class="inline-flex items-center justify-center gap-2 px-3 py-4 text-sm text-slate-400 transition hover:text-white"><i data-lucide="play-circle" class="h-5 w-5 text-cyan"></i> Uygulamayı keşfet</a>
+          </div>
+          <div class="mt-12 flex flex-wrap gap-x-8 gap-y-3 border-t border-white/10 pt-5 text-xs text-slate-500"><span class="mono flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-signal shadow-[0_0_10px_#39ff14]"></span> Android ready</span><span class="mono">ELM327 / BLUETOOTH</span><span class="mono">v1.0.0</span></div>
+        </div>
+        <div class="relative mx-auto w-full max-w-md reveal" style="transition-delay: .15s">
+          <div class="absolute -inset-8 rounded-full bg-cyan/10 blur-3xl"></div>
+          <div class="phone-shell relative mx-auto w-[min(76vw,330px)] rounded-[2.4rem] p-2.5">
+            <div class="absolute left-1/2 top-3 z-10 h-5 w-24 -translate-x-1/2 rounded-full bg-black"></div>
+            <div class="phone-screen relative overflow-hidden rounded-[1.9rem]">
+              <img src="img/1.jpg" alt="Obd Hud Car Doctor gerçek zamanlı HUD ekranı" class="block w-full">
+              <div class="scanline pointer-events-none absolute left-4 right-4 top-1/4 h-px"></div>
+            </div>
+          </div>
+          <div class="absolute -right-2 top-16 hidden rounded-lg border border-white/10 bg-black/80 p-3 backdrop-blur md:block"><div class="mono text-[10px] text-slate-500">LIVE TELEMETRY</div><div class="mt-1 flex items-center gap-2 text-sm text-signal"><span class="h-1.5 w-1.5 rounded-full bg-signal"></span> CONNECTED</div></div>
+          <div class="absolute -left-6 bottom-20 hidden rounded-lg border border-cyan/20 bg-black/80 p-3 backdrop-blur md:block"><div class="mono text-[10px] text-slate-500">CURRENT SPEED</div><div class="mt-1 mono text-xl text-cyan">064 <span class="text-xs text-slate-500">KM/H</span></div></div>
+        </div>
+      </div>
+      <div class="marquee mono flex w-[200%] gap-10 border-y border-white/10 py-3 text-[10px] uppercase tracking-[.3em] text-slate-600"><span>OBD2 DATA / ENGINE HEALTH / HUD MODE / DRIVE SMARTER / OBD2 DATA / ENGINE HEALTH / HUD MODE / DRIVE SMARTER /</span><span>OBD2 DATA / ENGINE HEALTH / HUD MODE / DRIVE SMARTER / OBD2 DATA / ENGINE HEALTH / HUD MODE / DRIVE SMARTER /</span></div>
+    </section>
+
+    <section id="ozellikler" class="mx-auto max-w-7xl px-5 py-24 lg:px-8 lg:py-32">
+      <div class="reveal mb-12 flex flex-col justify-between gap-5 md:flex-row md:items-end"><div><div class="mono mb-4 text-xs uppercase tracking-[.25em] text-cyan">/ 01 — sistem avantajları</div><h2 class="max-w-xl text-4xl font-semibold tracking-[-.04em] sm:text-5xl">Sürüşün önemli<br><span class="text-slate-500">sinyallerini yakalayın.</span></h2></div><p class="max-w-sm text-sm leading-6 text-slate-500">Gereksiz kalabalık yok. Gözünüz yolda kalırken gereken veri tam önünüzde.</p></div>
+      <div class="grid gap-4 md:grid-cols-3">
+        <article class="reveal line-glow border border-white/10 bg-panel p-7 transition hover:border-cyan/50" style="transition-delay:.05s"><div class="mb-12 flex items-start justify-between"><span class="text-3xl text-cyan">01</span><i data-lucide="scan-line" class="h-6 w-6 text-cyan"></i></div><h3 class="text-xl font-semibold">Gerçek Zamanlı HUD</h3><p class="mt-3 text-sm leading-6 text-slate-500">Hız, devir, hararet ve daha fazlasını yansıma modunda, tek bakışta okuyun.</p></article>
+        <article class="reveal line-glow border border-white/10 bg-panel p-7 transition hover:border-cyan/50" style="transition-delay:.12s"><div class="mb-12 flex items-start justify-between"><span class="text-3xl text-cyan">02</span><i data-lucide="bluetooth" class="h-6 w-6 text-cyan"></i></div><h3 class="text-xl font-semibold">ELM327 bağlantısı</h3><p class="mt-3 text-sm leading-6 text-slate-500">Bluetooth ELM327 adaptörünüzle hızlıca bağlanın, aracınızın canlı verisini alın.</p></article>
+        <article class="reveal line-glow border border-white/10 bg-panel p-7 transition hover:border-cyan/50" style="transition-delay:.19s"><div class="mb-12 flex items-start justify-between"><span class="text-3xl text-cyan">03</span><i data-lucide="eye" class="h-6 w-6 text-cyan"></i></div><h3 class="text-xl font-semibold">Neon minimal arayüz</h3><p class="mt-3 text-sm leading-6 text-slate-500">Gece sürüşü için tasarlanan yüksek kontrastlı, göz yormayan arayüz.</p></article>
+      </div>
+    </section>
+
+    <section id="ekranlar" class="border-y border-white/10 bg-[#080b0d] px-5 py-24 lg:px-8 lg:py-32">
+      <div class="mx-auto max-w-7xl"><div class="reveal mb-12"><div class="mono mb-4 text-xs uppercase tracking-[.25em] text-cyan">/ 02 — uygulama içi</div><h2 class="text-4xl font-semibold tracking-[-.04em] sm:text-5xl">Kontrol sizde.<br><span class="text-slate-500">Veri görünür.</span></h2></div>
+        <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <button class="gallery-item group relative overflow-hidden border border-white/10 text-left sm:col-span-2 lg:row-span-2" data-image="img/1.jpg" data-title="Ana HUD ekranı"><img src="img/1.jpg" alt="Ana HUD ekranı" class="h-full min-h-[460px] w-full object-cover object-top transition duration-500 group-hover:scale-105"><span class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 to-transparent p-5 pt-20"><span class="mono text-[10px] uppercase tracking-[.2em] text-cyan">dashboard</span><span class="mt-1 block text-lg">Ana HUD ekranı</span></span></button>
+          <button class="gallery-item group relative overflow-hidden border border-white/10 text-left" data-image="img/2.jpg" data-title="Alarm eşik ayarları"><img src="img/2.jpg" alt="Alarm eşik ayarları" class="h-72 w-full object-cover object-top transition duration-500 group-hover:scale-105"><span class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 to-transparent p-4 pt-16"><span class="block text-sm">Alarm eşikleri</span></span></button>
+          <button class="gallery-item group relative overflow-hidden border border-white/10 text-left" data-image="img/3.jpg" data-title="Voltaj ve vites uyarıları"><img src="img/3.jpg" alt="Voltaj ve vites uyarıları" class="h-72 w-full object-cover object-top transition duration-500 group-hover:scale-105"><span class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 to-transparent p-4 pt-16"><span class="block text-sm">Akıllı uyarılar</span></span></button>
+          <button class="gallery-item group relative overflow-hidden border border-white/10 text-left" data-image="img/4.jpg" data-title="Yansıma HUD modu"><img src="img/4.jpg" alt="Yansıma HUD modu" class="h-72 w-full object-cover object-top transition duration-500 group-hover:scale-105"><span class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 to-transparent p-4 pt-16"><span class="block text-sm">Yansıma modu</span></span></button>
+          <button class="gallery-item group relative overflow-hidden border border-white/10 text-left" data-image="img/5.jpg" data-title="Arıza teşhis ekranı"><img src="img/5.jpg" alt="Arıza teşhis ekranı" class="h-72 w-full object-cover object-top transition duration-500 group-hover:scale-105"><span class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 to-transparent p-4 pt-16"><span class="block text-sm">Arıza teşhisi</span></span></button>
+          <button class="gallery-item group relative overflow-hidden border border-white/10 text-left" data-image="img/6.jpg" data-title="Sürüş geçmişi"><img src="img/6.jpg" alt="Sürüş geçmişi" class="h-72 w-full object-cover object-top transition duration-500 group-hover:scale-105"><span class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 to-transparent p-4 pt-16"><span class="block text-sm">Sürüş geçmişi</span></span></button>
+          <button class="gallery-item group relative overflow-hidden border border-white/10 text-left" data-image="img/7.jpg" data-title="Bağlantı ve veri testi"><img src="img/7.jpg" alt="Bağlantı ve veri testi" class="h-72 w-full object-cover object-top transition duration-500 group-hover:scale-105"><span class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 to-transparent p-4 pt-16"><span class="block text-sm">Bağlantı testi</span></span></button>
+        </div>
+      </div>
+    </section>
+
+    <section id="download" class="relative overflow-hidden px-5 py-24 lg:px-8 lg:py-32"><div class="absolute left-1/2 top-1/2 h-80 w-80 -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan/10 blur-[100px]"></div><div class="relative mx-auto max-w-4xl text-center reveal"><div class="mono mb-5 text-xs uppercase tracking-[.25em] text-cyan">/ 03 — ilk sürüşünüze hazır</div><h2 class="text-4xl font-semibold tracking-[-.04em] sm:text-6xl">Yola çıkın.<br><span class="text-cyan glow">Veriyi görün.</span></h2><p class="mx-auto mt-6 max-w-lg text-slate-400">Obd Hud Car Doctor’ı şimdi indirin ve telefonunuzu akıllı bir sürüş ekranına dönüştürün.</p><a href="https://play.google.com/store" target="_blank" rel="noopener" class="mt-9 inline-flex items-center gap-3 rounded-lg bg-cyan px-7 py-4 font-semibold text-black transition hover:-translate-y-1 hover:shadow-[0_0_30px_rgba(0,240,255,.4)]"><i data-lucide="play" class="h-5 w-5 fill-current"></i> Google Play'den İndir ↗</a><p class="mono mt-4 text-[10px] uppercase tracking-widest text-slate-600">Android · ELM327 · ücretsiz başlangıç</p></div></section>
+  </main>
+
+  <footer class="border-t border-white/10 px-5 py-8 lg:px-8"><div class="mx-auto flex max-w-7xl flex-col justify-between gap-5 text-xs text-slate-500 sm:flex-row sm:items-center"><span>© 2026 Baser AI Tech. Tüm hakları saklıdır.</span><a href="privacy.html" class="transition hover:text-cyan">Gizlilik Politikası ↗</a></div></footer>
+
+  <div id="lightbox" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/90 p-5 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="Ekran görüntüsü önizlemesi"><button id="closeLightbox" class="absolute right-5 top-5 rounded-full border border-white/20 p-3 text-white transition hover:border-cyan hover:text-cyan" aria-label="Önizlemeyi kapat"><i data-lucide="x" class="h-5 w-5"></i></button><div class="max-h-[90vh] max-w-3xl text-center"><img id="lightboxImage" src="" alt="" class="max-h-[80vh] w-auto max-w-full object-contain"><p id="lightboxTitle" class="mono mt-4 text-sm text-cyan"></p></div></div>
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    lucide.createIcons();
+    const menuButton = document.getElementById('menuButton');
+    const mobileMenu = document.getElementById('mobileMenu');
+    menuButton.addEventListener('click', () => { const isOpen = !mobileMenu.classList.toggle('hidden'); menuButton.setAttribute('aria-expanded', String(isOpen)); });
+    mobileMenu.querySelectorAll('a').forEach(link => link.addEventListener('click', () => { mobileMenu.classList.add('hidden'); menuButton.setAttribute('aria-expanded', 'false'); }));
+    const observer = new IntersectionObserver(entries => entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); }), { threshold: .12 });
+    document.querySelectorAll('.reveal').forEach(item => observer.observe(item));
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImage = document.getElementById('lightboxImage');
+    const lightboxTitle = document.getElementById('lightboxTitle');
+    document.querySelectorAll('.gallery-item').forEach(item => item.addEventListener('click', () => { lightboxImage.src = item.dataset.image; lightboxImage.alt = item.dataset.title; lightboxTitle.textContent = item.dataset.title; lightbox.classList.remove('hidden'); lightbox.classList.add('flex'); document.body.style.overflow = 'hidden'; }));
+    function closeLightbox() { lightbox.classList.add('hidden'); lightbox.classList.remove('flex'); document.body.style.overflow = ''; }
+    document.getElementById('closeLightbox').addEventListener('click', closeLightbox);
+    lightbox.addEventListener('click', event => { if (event.target === lightbox) closeLightbox(); });
+    document.addEventListener('keydown', event => { if (event.key === 'Escape') closeLightbox(); });
+  </script>
+</body>
+</html>
